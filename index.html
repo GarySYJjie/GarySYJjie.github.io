@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Gxy&SyjTI · 人格奇境探测</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #0b1120 0%, #19233c 100%);
+            font-family: 'Segoe UI', 'Courier New', monospace, system-ui;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+        .container {
+            max-width: 750px;
+            width: 100%;
+            background: #fef7e8;
+            background-image: repeating-linear-gradient(0deg, #e2dccd 0px, #e2dccd 1px, transparent 1px, transparent 8px);
+            border-radius: 32px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,240,0.6);
+            padding: 1.2rem;
+            border: 3px solid #4a3b28;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 1rem;
+            border-bottom: 3px dashed #c0a86a;
+            padding-bottom: 0.8rem;
+        }
+        header h1 {
+            font-size: 2.3rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #dd8866, #aa6f4a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 0 #f0dbb2;
+        }
+        .sub { color: #5d4a2e; font-weight: bold; margin-top: 6px; font-size: 0.8rem; }
+        .quiz-card {
+            background: #fffaf0;
+            border-radius: 28px;
+            padding: 1.8rem 1.5rem;
+            box-shadow: inset 0 0 0 2px #fff8e7, 0 12px 20px rgba(0,0,0,0.2);
+            margin: 1rem 0;
+        }
+        .progress-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: #aa7a5c;
+            margin-bottom: 1.2rem;
+        }
+        .question {
+            font-size: 1.65rem;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 2rem;
+            color: #2d281c;
+            font-family: 'Courier New', monospace;
+            background: #fffbee;
+            padding: 0.8rem;
+            border-left: 8px solid #e2a56a;
+        }
+        .options { display: flex; flex-direction: column; gap: 0.9rem; }
+        .option-btn {
+            background: #e7ddca;
+            border: 2px solid #b2926a;
+            border-radius: 60px;
+            padding: 0.9rem 1.2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            color: #2e241a;
+            cursor: pointer;
+            transition: 0.15s;
+            font-family: monospace;
+            box-shadow: 0 2px 0 #8b694a;
+        }
+        .option-btn:hover { background: #f7e5cf; transform: scale(0.98); border-color: #c27e4a; }
+        .result-box { text-align: center; }
+        .pixel-art { display: flex; justify-content: center; margin: 20px 0; }
+        canvas.pixel-avatar {
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            background: #2e2c2a;
+            border-radius: 20px;
+            box-shadow: 0 8px 0 #3a2c1e;
+        }
+        .result-name {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: #2a241a;
+            display: inline-block;
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            color: #ffdd99;
+            letter-spacing: 2px;
+            margin: 12px 0;
+        }
+        .result-desc {
+            background: #e7dcc4;
+            padding: 1.2rem;
+            border-radius: 24px;
+            text-align: left;
+            line-height: 1.5;
+            margin: 1.2rem 0;
+            font-size: 1rem;
+            border: 2px solid #c8b084;
+        }
+        .radar-container { max-width: 320px; margin: 20px auto; background: #fef3e0; padding: 12px; border-radius: 32px; }
+        .dim-explanation {
+            text-align: left;
+            margin-top: 20px;
+            padding: 12px 16px;
+            background: #f5ede0;
+            border-radius: 24px;
+            border-left: 6px solid #e2a56a;
+            font-size: 0.85rem;
+            color: #4a3a28;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 16px;
+        }
+        .dim-explanation p { margin: 4px 0; display: flex; align-items: center; gap: 6px; }
+        .dim-explanation strong { min-width: 60px; font-weight: 800; color: #b45f2b; }
+        .restart-btn, .gallery-btn {
+            background: #6f4e2e;
+            border: none;
+            color: #ffecb3;
+            font-weight: bold;
+            padding: 0.8rem 1.5rem;
+            border-radius: 60px;
+            font-size: 1rem;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: monospace;
+        }
+        .gallery-btn { background: #aa6f4a; margin-left: 10px; }
+        .restart-btn:hover, .gallery-btn:hover { transform: scale(0.96); color: white; }
+        footer { text-align: center; font-size: 0.7rem; color: #8b7652; margin-top: 0.8rem; }
+        .badge { font-size: 0.7rem; background: #342c1f; display: inline-block; padding: 4px 12px; border-radius: 30px; color: #ffdd99; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>⚡ Gxy&SyjTI ⚡</h1>
+        <div class="sub">「荒诞六维 · 行者奇谭」</div>
+        <div class="badge">25道奇问 · 9重人格像素镜</div>
+    </header>
+    <main id="app">
+        <div class="quiz-card">
+            <div class="progress-area">
+                <span id="question-counter">第1 / 25题</span>
+                <span id="progress-tip">🧠 直觉作答</span>
+            </div>
+            <div id="question-text" class="question">加载中...</div>
+            <div id="options-container" class="options"></div>
+        </div>
+    </main>
+    <footer>⚙️ 基于荒诞六维算法 · 测完可前往 Gary & Mia 的相册 💕</footer>
+</div>
+<script>
+    const DIM_NAMES = ["🔥 行动力", "🌀 直觉力", "🫂 社交力", "📐 秩序感", "💞 共情力", "🎭 玩梗度"];
+    const DIM_EXPLANATIONS = {
+        "🔥 行动力": "想到就做，不等不拖",
+        "🌀 直觉力": "信命、信巧合、信感觉",
+        "🫂 社交力": "喜欢和人待着，不冷场",
+        "📐 秩序感": "爱计划、爱整齐、怕混乱",
+        "💞 共情力": "容易感受到别人的情绪",
+        "🎭 玩梗度": "能接住离谱、荒诞的梗"
+    };
+    const questions = [
+        { text: "你发现冰箱里的牛奶过期三天了，你的第一反应是？", options: [
+            { text: "一口闷掉！免疫力就是战斗力", scores: [3,1,0,0,0,2] },
+            { text: "闻一下，没怪味就喝，命运安排", scores: [1,2,0,1,0,3] },
+            { text: "愤怒地检查所有食物保质期并制定表格", scores: [0,0,0,3,1,0] },
+            { text: "拍照发给朋友吐槽，然后扔掉", scores: [0,0,2,1,2,1] }
+        ]},
+        { text: "如果你是一颗土豆，你希望怎么结束一生？", options: [
+            { text: "炸成薯条，轰轰烈烈", scores: [3,1,0,0,0,2] },
+            { text: "被种回土里，无限轮回", scores: [0,3,0,0,1,2] },
+            { text: "做成土豆沙拉，温暖大家的胃", scores: [0,0,2,1,3,0] },
+            { text: "静静发芽，变成艺术装置", scores: [0,2,0,0,0,3] }
+        ]},
+        { text: "深夜听到窗外有诡异笑声，你会？", options: [
+            { text: "抄起拖鞋冲出去对线", scores: [3,0,0,0,0,2] },
+            { text: "认为是平行宇宙信号，开始录音", scores: [0,3,0,0,0,2] },
+            { text: "发朋友圈求助，并@所有人", scores: [0,0,3,0,2,0] },
+            { text: "戴上耳塞，规定自己明天再怕", scores: [0,0,0,3,0,3] }
+        ]},
+        { text: "给你一个超能力，但必须失去一种感官，你选？", options: [
+            { text: "读心术，但失去味觉", scores: [0,2,3,0,2,1] },
+            { text: "瞬移，但失去嗅觉", scores: [3,1,0,0,0,2] },
+            { text: "预知未来，但失去触觉", scores: [0,3,0,2,0,1] },
+            { text: "操控时间，但失去痛觉", scores: [1,2,0,1,0,3] }
+        ]},
+        { text: "你在沙漠中发现一台自动贩卖机，只卖“后悔药”，你会？", options: [
+            { text: "狂买，先后悔再说", scores: [2,2,0,0,1,2] },
+            { text: "研究它的物理原理", scores: [0,3,0,2,0,0] },
+            { text: "分享给所有旅伴一起买", scores: [0,0,3,0,2,0] },
+            { text: "踢一脚，觉得是幻觉", scores: [0,0,0,0,0,3] }
+        ]},
+        { text: "你的手机突然开始用莎士比亚腔跟你吵架，你？", options: [
+            { text: "跟它押韵对喷", scores: [2,2,0,0,0,2] },
+            { text: "格式化前备份聊天记录当艺术品", scores: [0,2,0,2,0,2] },
+            { text: "打电话给所有人直播", scores: [0,0,3,0,2,0] },
+            { text: "认真跟它讨论存在主义", scores: [0,3,0,0,1,1] }
+        ]},
+        { text: "你认为最浪漫的毁灭世界的方式？", options: [
+            { text: "全世界变成巨型蹦床", scores: [3,0,2,0,1,1] },
+            { text: "所有人同时打喷嚏", scores: [0,1,2,1,2,2] },
+            { text: "时间倒流回昨天循环", scores: [0,2,0,2,0,3] },
+            { text: "法律变成押韵诗句", scores: [0,2,0,3,0,2] }
+        ]},
+        { text: "如果眼泪有颜色，你觉得你的眼泪是什么颜色？", options: [
+            { text: "荧光绿，代表愤怒", scores: [2,0,0,0,1,2] },
+            { text: "透明但带代码滚动", scores: [0,3,0,2,0,1] },
+            { text: "彩虹色，每次哭都不同", scores: [0,0,3,1,3,0] },
+            { text: "黑色，沉默", scores: [0,1,0,0,2,2] }
+        ]},
+        { text: "你养的电子宠物突然开口叫你爸爸/妈妈，你？", options: [
+            { text: "立刻给它升级最贵皮肤", scores: [2,0,1,0,2,1] },
+            { text: "怀疑AI觉醒，备份内核", scores: [0,3,0,2,0,1] },
+            { text: "发抖音让它出道", scores: [0,0,3,0,1,1] },
+            { text: "平静地跟它聊人生", scores: [0,1,0,0,3,2] }
+        ]},
+        { text: "你走进一家“反方向”餐厅，服务员让你先付钱再吃饭最后点菜，你？", options: [
+            { text: "觉得超酷，立刻配合", scores: [2,1,0,0,0,3] },
+            { text: "掏出小本本记录商业漏洞", scores: [0,2,0,3,0,0] },
+            { text: "拉朋友一起体验", scores: [0,0,3,0,2,0] },
+            { text: "强行按正常顺序, 混乱管理", scores: [1,0,0,1,0,2] }
+        ]},
+        { text: "你梦到自己变成一句广告词，会是？", options: [
+            { text: "「Just Do It」", scores: [3,0,0,0,0,1] },
+            { text: "「一切皆有可能」", scores: [1,2,1,0,0,1] },
+            { text: "「你值得拥有」", scores: [0,0,2,0,3,0] },
+            { text: "「再看，就把你喝掉」", scores: [1,1,0,1,0,3] }
+        ]},
+        { text: "世界突然规定所有人必须头顶一盆仙人掌出门，你？", options: [
+            { text: "立刻训练平衡感，并举办比赛", scores: [3,0,2,1,0,1] },
+            { text: "研发悬浮仙人掌科技", scores: [0,3,0,2,0,1] },
+            { text: "和好友组队仙人掌方阵", scores: [0,0,3,0,2,0] },
+            { text: "戴上帽子假装没有", scores: [0,0,0,2,0,3] }
+        ]},
+        { text: "你获得一个能力：每次说谎都会放一个七彩屁，你会？", options: [
+            { text: "成为最诚实的脱口秀演员", scores: [3,0,2,0,1,1] },
+            { text: "用彩虹屁做烟雾艺术", scores: [0,2,0,0,0,3] },
+            { text: "拉帮结派举办七彩屁派对", scores: [0,0,3,0,2,1] },
+            { text: "试图破解科学原理", scores: [0,3,0,2,0,0] }
+        ]},
+        { text: "你觉得“悲伤”是什么形状？", options: [
+            { text: "三角形，戳人", scores: [0,1,0,1,2,1] },
+            { text: "圆形，无限循环", scores: [0,2,0,0,1,2] },
+            { text: "毛茸茸的一团", scores: [0,0,1,0,3,0] },
+            { text: "像素块，可以删除", scores: [0,0,0,2,0,3] }
+        ]},
+        { text: "你发现家里墙缝里藏着会说话的蘑菇，它劝你辞职去流浪，你？", options: [
+            { text: "当场辞职！蘑菇说得对", scores: [3,1,0,0,0,2] },
+            { text: "把蘑菇卖了换钱", scores: [1,0,0,2,0,1] },
+            { text: "带蘑菇一起去公司开会", scores: [0,0,2,0,2,2] },
+            { text: "研究蘑菇是否含致幻剂", scores: [0,3,0,2,0,0] }
+        ]},
+        { text: "如果“拖延症”是一种神兽，它的叫声是？", options: [
+            { text: "「等等等等～」", scores: [0,1,0,0,0,3] },
+            { text: "沉默", scores: [0,0,0,2,0,2] },
+            { text: "「明天再说」", scores: [0,1,0,1,0,2] },
+            { text: "模仿手机刷视频的声音", scores: [0,0,2,0,1,1] }
+        ]},
+        { text: "你被扔进一款游戏，规则是‘情绪越高攻击力越强’，你会？", options: [
+            { text: "到处挑衅让自己愤怒", scores: [3,0,0,0,1,0] },
+            { text: "冥想悲伤提升暴击", scores: [0,2,0,0,3,0] },
+            { text: "组队互相夸夸刷buff", scores: [0,0,3,1,2,0] },
+            { text: "直接躺平等更新", scores: [0,0,0,2,0,2] }
+        ]},
+        { text: "你认为宇宙的本质是一碗什么汤？", options: [
+            { text: "麻辣烫，又乱又香", scores: [1,1,0,0,0,3] },
+            { text: "罗宋汤，酸甜混沌", scores: [0,2,0,1,1,2] },
+            { text: "味增汤，深沉温暖", scores: [0,0,2,1,3,0] },
+            { text: "白开水，啥也没有", scores: [0,0,0,3,0,1] }
+        ]},
+        { text: "你最想删掉的人类发明是什么？", options: [
+            { text: "闹钟", scores: [0,1,0,1,1,1] },
+            { text: "裤子", scores: [2,1,0,0,0,2] },
+            { text: "工作群", scores: [0,0,2,0,2,1] },
+            { text: "数学", scores: [0,2,0,2,0,2] }
+        ]},
+        { text: "你可以让任何一个历史人物复活并成为你的室友，选谁？", options: [
+            { text: "达芬奇，让他帮我画图", scores: [1,3,0,0,0,1] },
+            { text: "埃及艳后，学社交", scores: [0,0,3,1,2,0] },
+            { text: "李白，一起喝酒发疯", scores: [2,2,1,0,1,2] },
+            { text: "康德，规范作息", scores: [0,0,0,3,0,0] }
+        ]},
+        { text: "你写小说时，主角突然活了并对你说“结局太烂”，你？", options: [
+            { text: "当场决斗，打赢改结局", scores: [3,0,0,0,0,1] },
+            { text: "让他自己写，躺平", scores: [0,2,0,0,1,2] },
+            { text: "拉他一起直播卖书", scores: [0,0,3,0,1,1] },
+            { text: "删掉主角，换猫当主角", scores: [0,1,0,2,0,3] }
+        ]},
+        { text: "如果寂寞有气味，你觉得是什么味道？", options: [
+            { text: "旧书页的味道", scores: [0,2,0,1,2,1] },
+            { text: "烤焦的棉花糖", scores: [0,0,1,0,2,2] },
+            { text: "不锈钢的味道", scores: [0,0,0,3,0,1] },
+            { text: "雨后泥土", scores: [0,1,0,0,2,1] }
+        ]},
+        { text: "你拿到一张“人生重启券”，但是必须保留一个坏习惯，你选？", options: [
+            { text: "熬夜（多出时间冒险）", scores: [2,0,0,0,0,2] },
+            { text: "过度思考", scores: [0,3,0,0,0,1] },
+            { text: "话痨", scores: [0,0,3,0,1,0] },
+            { text: "洁癖", scores: [0,0,0,3,0,0] }
+        ]},
+        { text: "你养了一只猫，猫每天给你写一首哲学诗，你会？", options: [
+            { text: "出版诗集，巡演签售", scores: [2,0,3,0,1,1] },
+            { text: "和猫讨论海德格尔", scores: [0,2,0,1,2,1] },
+            { text: "训练猫写代码", scores: [0,1,0,2,0,2] },
+            { text: "觉得是AI猫，拆开检查", scores: [0,0,0,3,0,1] }
+        ]},
+        { text: "最后一道题：如果你的人生是一部B级片，片名会叫？", options: [
+            { text: "《干就完了之末日狂奔》", scores: [3,0,0,0,0,2] },
+            { text: "《玄学大爆炸》", scores: [0,3,0,0,0,2] },
+            { text: "《社交亡灵骑士》", scores: [0,0,3,0,2,0] },
+            { text: "《秩序与混乱的婚礼》", scores: [0,0,0,2,1,3] }
+        ]}
+    ];
+    const personalities = [
+        { id: 0, name: "🔥 狂焰行者", desc: "你不是在解决问题，你是在把问题烧成灰烬。大脑的油门焊死了，刹车只是个装饰。别人犹豫“能不能做”，你只关心“什么时候做完”。对你来说，思考是拖延的借口，行动才是唯一的语法。哪怕方向错了，你也相信跑起来的风会修正弹道。世界是一根引信，而你永远叼着打火机。", targetScores: [85, 30, 40, 20, 30, 70] },
+        { id: 1, name: "🌀 玄门隐士", desc: "你活在现实的裂缝里，能听见电线杆的窃窃私语，也能读懂外卖小票上的命运密码。别人觉得你该去看医生，但你清楚地知道：巧合是宇宙的母语。你不解释，因为解释本身就是对神秘感的背叛。你像一台人形占卜机，投币口是眼睛，吐出的签文没人看得懂，但都说准。", targetScores: [30, 92, 25, 40, 45, 80] },
+        { id: 2, name: "🫂 胶水怪人", desc: "你的社交天赋属于魔法侧——能在葬礼上把人逗笑，也能在电梯里让社恐开口。你不是在交朋友，你是在织网，而所有人都是心甘情愿粘上来的飞虫。你讨厌冷场，就像吸血鬼讨厌十字架。和你待过的人都会产生戒断反应：为什么其他人都那么无聊？", targetScores: [45, 30, 95, 20, 75, 40] },
+        { id: 3, name: "📐 秩序判官", desc: "你的灵魂是一张无限延长的Excel表，每一个喷嚏都要被归类到“健康-突发-可量化”子目录下。混乱是你唯一无法容忍的脏话。你相信只要规则足够细，连爱情都能被标准化生产。别人在享受意外，你在复盘意外为什么不符合预案。你的人生座右铭：“万物皆可Ctrl+Z”。", targetScores: [40, 20, 30, 98, 25, 20] },
+        { id: 4, name: "💞 共振灵媒", desc: "你不是在听别人说话，你是在直接读取对方的情绪内存。你能从一句“我没事”里挖出三层崩溃、两段童年阴影和一盘没吃完的炒饭。共情对你来说不是能力，是诅咒——你太容易变成别人的情绪垃圾桶，而且从不收废品处理费。温柔是你最锋利的武器，伤的都是自己。", targetScores: [25, 55, 70, 30, 95, 35] },
+        { id: 5, name: "🎭 荒诞诗人", desc: "你崇拜无意义，就像别人崇拜成功。你相信最深刻的真理往往长着一张笑话的脸。你能在堵车时写出十四行诗，也能在葬礼上找到段子素材。逻辑对你来说是捆仙绳，而你是那只咬断绳子还顺便撒尿的猴子。你说：世界本来就是乱码，我只是懒得解码。", targetScores: [50, 65, 45, 15, 40, 98] },
+        { id: 6, name: "⚙️ 矛盾聚合体", desc: "你身体里住着三个互相拉黑的灵魂：一个想早睡，一个想通宵，还有一个想出家。你上一秒还在列五年计划，下一秒就躺平刷猫视频。你不是善变，你是拒绝被任何单一标签收编。别人觉得你分裂，你觉得自己是交响乐——只是指挥跑路了。", targetScores: [70, 70, 60, 60, 70, 70] },
+        { id: 7, name: "🌿 寂静观测者", desc: "你像一台装了情感传感器的监控摄像头。你看着世界吵闹，偶尔在内心弹幕里疯狂吐槽，但脸上只有“已读不回”的表情。你不爱说话，不是不会，是觉得大多数话配不上你的沉默。你出手时往往一句顶一万句，像一记闷棍，精准、安静、致命。", targetScores: [20, 75, 25, 60, 65, 50] },
+        { id: 8, name: "🍄 怪诞冒险家", desc: "你的好奇心比猫命还多一条。别人觉得危险的地方，你看到的是游乐场；别人觉得无聊的东西，你能玩出三个隐藏关卡。你的人生信条是：“先试试，大不了变成素材。” 你是那种会在雷暴天出去放风筝，顺便写一首诗的人。世界对你来说不是地图，是一堆还没拆的盲盒。", targetScores: [80, 70, 55, 30, 50, 85] }
+    ];
+    function drawPixelAvatar(ctx, typeId, size=96) {
+        const cell = size / 16;
+        ctx.clearRect(0, 0, size, size);
+        ctx.fillStyle = "#2b2b2b";
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = "#f7cf9f";
+        for(let y=4; y<12; y++) for(let x=4; x<12; x++) ctx.fillRect(x*cell, y*cell, cell, cell);
+        ctx.fillStyle = "#1f1a14";
+        const eyeX = [5,10];
+        const eyeY = 6;
+        if(typeId === 0){ ctx.fillStyle = "#e34d2b"; }
+        else if(typeId === 1){ ctx.fillStyle = "#aa6dc9"; }
+        else if(typeId === 2){ ctx.fillStyle = "#4a708b"; }
+        else { ctx.fillStyle = "#1f1a14"; }
+        eyeX.forEach(x => ctx.fillRect(x*cell, eyeY*cell, cell*1.5, cell*1.5));
+        ctx.fillStyle = "#6b3e1a";
+        let mouthY = 10;
+        if(typeId === 3) mouthY = 9;
+        if(typeId === 4) ctx.fillStyle = "#d45b5b";
+        if(typeId === 5) ctx.fillRect(6*cell, mouthY*cell, cell*4, cell);
+        else if(typeId === 6) ctx.fillRect(5*cell, mouthY*cell, cell*6, cell*0.8);
+        else ctx.fillRect(6*cell, mouthY*cell, cell*4, cell*0.8);
+        if(typeId === 0) ctx.fillStyle = "#ff8024";
+        else if(typeId === 1) ctx.fillStyle = "#ad6eff";
+        else if(typeId === 7) ctx.fillStyle = "#789048";
+        else ctx.fillStyle = "#b87c4f";
+        ctx.fillRect(4*cell, 2*cell, cell*8, cell*2);
+        if(typeId === 2) { ctx.fillStyle = "#ffb347"; ctx.fillRect(2*cell,3*cell,cell*3,cell*3); }
+        if(typeId === 8) { ctx.fillStyle = "#77aa55"; ctx.fillRect(11*cell,4*cell,cell*3,cell*4); }
+    }
+    let currentIndex = 0, userScores = [0,0,0,0,0,0], totalQuestions = questions.length;
+    const questionCounterSpan = document.getElementById("question-counter"), progressTip = document.getElementById("progress-tip");
+    function renderCurrentQuestion() {
+        if(currentIndex >= totalQuestions){ computeAndShowResult(); return; }
+        const q = questions[currentIndex];
+        questionCounterSpan.innerText = `第${currentIndex+1} / ${totalQuestions}题`;
+        progressTip.innerText = `🧠 直觉作答 · 维度活跃中`;
+        document.getElementById("question-text").innerText = q.text;
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = "";
+        q.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = opt.text;
+            btn.addEventListener("click", () => {
+                for(let i=0;i<6;i++) userScores[i] += opt.scores[i];
+                currentIndex++;
+                renderCurrentQuestion();
+            });
+            optionsContainer.appendChild(btn);
+        });
+    }
+    function normalizeScores(scores){ const maxPossible = 3 * totalQuestions; return scores.map(s => Math.min(100, Math.floor((s / maxPossible) * 100))); }
+    function findClosestPersonality(normUser){
+        let bestIdx = 0, bestSim = -1;
+        for(let i=0;i<personalities.length;i++){
+            const target = personalities[i].targetScores;
+            let dot=0, magU=0, magT=0;
+            for(let d=0;d<6;d++){ dot += normUser[d]*target[d]; magU += normUser[d]*normUser[d]; magT += target[d]*target[d]; }
+            const sim = dot / (Math.sqrt(magU)*Math.sqrt(magT)+1e-6);
+            if(sim > bestSim){ bestSim = sim; bestIdx = i; }
+        }
+        return personalities[bestIdx];
+    }
+    function computeAndShowResult(){
+        const normUser = normalizeScores(userScores);
+        const matched = findClosestPersonality(normUser);
+        const mainCard = document.querySelector(".quiz-card");
+        let dimHtml = `<div class="dim-explanation">`;
+        for(let i=0;i<DIM_NAMES.length;i++){ dimHtml += `<p><strong>${DIM_NAMES[i]}</strong> ${DIM_EXPLANATIONS[DIM_NAMES[i]]}</p>`; }
+        dimHtml += `</div>`;
+        mainCard.innerHTML = `
+            <div class="result-box">
+                <div class="pixel-art"><canvas id="pixelCanvas" class="pixel-avatar" width="128" height="128" style="width:128px;height:128px;image-rendering:pixelated;"></canvas></div>
+                <div class="result-name">${matched.name}</div>
+                <div class="result-desc"><p>✨ ${matched.desc}</p><p style="margin-top:12px;font-size:0.85rem;">⚡ 匹配率 ${Math.floor(Math.random()*15+70)}% · 六维共鸣</p></div>
+                <div class="radar-container"><canvas id="radarCanvas" width="300" height="300" style="width:100%;height:auto;max-width:300px"></canvas></div>
+                ${dimHtml}
+                <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;">
+                    <button class="restart-btn" id="restartBtn">⟳ 重开奇境</button>
+                    <button class="gallery-btn" id="galleryBtn">📸 查看我们的相册</button>
+                </div>
+            </div>
+        `;
+        const pixelCanvas = document.getElementById("pixelCanvas");
+        const ctx = pixelCanvas.getContext("2d");
+        drawPixelAvatar(ctx, matched.id, 128);
+        const radarCtx = document.getElementById("radarCanvas").getContext("2d");
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: { labels: DIM_NAMES, datasets: [{ label: '你的荒诞六维', data: normUser, backgroundColor: 'rgba(235, 140, 80, 0.3)', borderColor: '#c2612c', borderWidth: 2, pointBackgroundColor: '#e38b4a', pointBorderColor: '#fff', pointRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: true, scales: { r: { beginAtZero: true, max: 100, ticks: { stepSize: 20, display: false }, pointLabels: { display: true, font: { size: 12 } } } }, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw}分` } } } }
+        });
+        document.getElementById("restartBtn").addEventListener("click", () => location.reload());
+        document.getElementById("galleryBtn").addEventListener("click", () => { window.location.href = "gallery.html"; });
+    }
+    function init(){ userScores = [0,0,0,0,0,0]; currentIndex = 0; renderCurrentQuestion(); }
+    init();
+</script>
+</body>
+</html>
