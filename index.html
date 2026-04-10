@@ -17,7 +17,7 @@
             padding: 1.5rem;
         }
         .container {
-            max-width: 750px;
+            max-width: 800px;
             width: 100%;
             background: #fef7e8;
             background-image: repeating-linear-gradient(0deg, #e2dccd 0px, #e2dccd 1px, transparent 1px, transparent 8px);
@@ -133,6 +133,28 @@
         }
         .dim-explanation p { margin: 4px 0; display: flex; align-items: center; gap: 6px; }
         .dim-explanation strong { min-width: 60px; font-weight: 800; color: #b45f2b; }
+        .score-badge {
+            background: #2e241a;
+            color: #ffdd99;
+            border-radius: 30px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+        .insight-card {
+            background: #fff3e6;
+            border-radius: 20px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: left;
+        }
+        .second-match {
+            background: #f1e7d6;
+            border-radius: 20px;
+            padding: 0.8rem;
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
         .restart-btn, .gallery-btn {
             background: #6f4e2e;
             border: none;
@@ -150,6 +172,7 @@
         .restart-btn:hover, .gallery-btn:hover { transform: scale(0.96); color: white; }
         footer { text-align: center; font-size: 0.7rem; color: #8b7652; margin-top: 0.8rem; }
         .badge { font-size: 0.7rem; background: #342c1f; display: inline-block; padding: 4px 12px; border-radius: 30px; color: #ffdd99; }
+        .dim-detail { margin-top: 8px; font-size: 0.75rem; color: #5e4a32; }
     </style>
 </head>
 <body>
@@ -169,9 +192,10 @@
             <div id="options-container" class="options"></div>
         </div>
     </main>
-    <footer>⚙️ 基于荒诞六维算法 · 测完可前往 Gary & Mia 的相册 💕</footer>
+    <footer>⚙️ 基于多维人格算法 · 测完可前往 Gary & Mia 的相册 💕</footer>
 </div>
 <script>
+    // ======================= 维度定义 =======================
     const DIM_NAMES = ["🔥 行动力", "🌀 直觉力", "🫂 社交力", "📐 秩序感", "💞 共情力", "🎭 玩梗度"];
     const DIM_EXPLANATIONS = {
         "🔥 行动力": "想到就做，不等不拖",
@@ -181,6 +205,17 @@
         "💞 共情力": "容易感受到别人的情绪",
         "🎭 玩梗度": "能接住离谱、荒诞的梗"
     };
+    // 维度深度解读（高分/低分含义）
+    const DIM_INSIGHTS = {
+        "🔥 行动力": { high: "你是一台永动机，想到就做，很少犹豫。", low: "你习惯深思熟虑，但有时会错过最佳时机。", advice: "试试「5秒法则」：想做什么，倒数5秒就行动。" },
+        "🌀 直觉力": { high: "你的第六感很准，常能感知到隐藏的规律。", low: "你更依赖事实和逻辑，对玄学保持距离。", advice: "偶尔放下理性，相信一次直觉，也许有惊喜。" },
+        "🫂 社交力": { high: "你是人群中的粘合剂，擅长活跃气氛。", low: "你更喜欢独处或深度交流，讨厌无效社交。", advice: "找到让你舒服的社交节奏，不必勉强。" },
+        "📐 秩序感": { high: "你热爱计划和整洁，混乱会让你焦虑。", low: "你随性自由，不喜欢被规则束缚。", advice: "建立最小限度的秩序（比如每天整理5分钟），会提升效率。" },
+        "💞 共情力": { high: "你能轻易感知他人情绪，是很好的倾听者。", low: "你理性冷静，不容易被他人情绪影响。", advice: "共情力低不代表冷漠，只是你更擅长解决问题。" },
+        "🎭 玩梗度": { high: "你脑洞清奇，能接住各种荒诞梗。", low: "你偏向正经，对无厘头内容不太感冒。", advice: "偶尔放松一点，荒诞是生活的解药。" }
+    };
+    
+    // ======================= 题目（25道，与原来一致） =======================
     const questions = [
         { text: "你发现冰箱里的牛奶过期三天了，你的第一反应是？", options: [
             { text: "一口闷掉！免疫力就是战斗力", scores: [3,1,0,0,0,2] },
@@ -333,17 +368,34 @@
             { text: "《秩序与混乱的婚礼》", scores: [0,0,0,2,1,3] }
         ]}
     ];
+    
+    // ======================= 人格库（9种，targetScores 已微调，更符合特征） =======================
     const personalities = [
-        { id: 0, name: "🔥 狂焰行者", desc: "你不是在解决问题，你是在把问题烧成灰烬。大脑的油门焊死了，刹车只是个装饰。别人犹豫“能不能做”，你只关心“什么时候做完”。对你来说，思考是拖延的借口，行动才是唯一的语法。哪怕方向错了，你也相信跑起来的风会修正弹道。世界是一根引信，而你永远叼着打火机。", targetScores: [85, 30, 40, 20, 30, 70] },
-        { id: 1, name: "🌀 玄门隐士", desc: "你活在现实的裂缝里，能听见电线杆的窃窃私语，也能读懂外卖小票上的命运密码。别人觉得你该去看医生，但你清楚地知道：巧合是宇宙的母语。你不解释，因为解释本身就是对神秘感的背叛。你像一台人形占卜机，投币口是眼睛，吐出的签文没人看得懂，但都说准。", targetScores: [30, 92, 25, 40, 45, 80] },
-        { id: 2, name: "🫂 胶水怪人", desc: "你的社交天赋属于魔法侧——能在葬礼上把人逗笑，也能在电梯里让社恐开口。你不是在交朋友，你是在织网，而所有人都是心甘情愿粘上来的飞虫。你讨厌冷场，就像吸血鬼讨厌十字架。和你待过的人都会产生戒断反应：为什么其他人都那么无聊？", targetScores: [45, 30, 95, 20, 75, 40] },
-        { id: 3, name: "📐 秩序判官", desc: "你的灵魂是一张无限延长的Excel表，每一个喷嚏都要被归类到“健康-突发-可量化”子目录下。混乱是你唯一无法容忍的脏话。你相信只要规则足够细，连爱情都能被标准化生产。别人在享受意外，你在复盘意外为什么不符合预案。你的人生座右铭：“万物皆可Ctrl+Z”。", targetScores: [40, 20, 30, 98, 25, 20] },
-        { id: 4, name: "💞 共振灵媒", desc: "你不是在听别人说话，你是在直接读取对方的情绪内存。你能从一句“我没事”里挖出三层崩溃、两段童年阴影和一盘没吃完的炒饭。共情对你来说不是能力，是诅咒——你太容易变成别人的情绪垃圾桶，而且从不收废品处理费。温柔是你最锋利的武器，伤的都是自己。", targetScores: [25, 55, 70, 30, 95, 35] },
-        { id: 5, name: "🎭 荒诞诗人", desc: "你崇拜无意义，就像别人崇拜成功。你相信最深刻的真理往往长着一张笑话的脸。你能在堵车时写出十四行诗，也能在葬礼上找到段子素材。逻辑对你来说是捆仙绳，而你是那只咬断绳子还顺便撒尿的猴子。你说：世界本来就是乱码，我只是懒得解码。", targetScores: [50, 65, 45, 15, 40, 98] },
-        { id: 6, name: "⚙️ 矛盾聚合体", desc: "你身体里住着三个互相拉黑的灵魂：一个想早睡，一个想通宵，还有一个想出家。你上一秒还在列五年计划，下一秒就躺平刷猫视频。你不是善变，你是拒绝被任何单一标签收编。别人觉得你分裂，你觉得自己是交响乐——只是指挥跑路了。", targetScores: [70, 70, 60, 60, 70, 70] },
-        { id: 7, name: "🌿 寂静观测者", desc: "你像一台装了情感传感器的监控摄像头。你看着世界吵闹，偶尔在内心弹幕里疯狂吐槽，但脸上只有“已读不回”的表情。你不爱说话，不是不会，是觉得大多数话配不上你的沉默。你出手时往往一句顶一万句，像一记闷棍，精准、安静、致命。", targetScores: [20, 75, 25, 60, 65, 50] },
-        { id: 8, name: "🍄 怪诞冒险家", desc: "你的好奇心比猫命还多一条。别人觉得危险的地方，你看到的是游乐场；别人觉得无聊的东西，你能玩出三个隐藏关卡。你的人生信条是：“先试试，大不了变成素材。” 你是那种会在雷暴天出去放风筝，顺便写一首诗的人。世界对你来说不是地图，是一堆还没拆的盲盒。", targetScores: [80, 70, 55, 30, 50, 85] }
+        { id: 0, name: "🔥 狂焰行者", desc: "你不是在解决问题，你是在把问题烧成灰烬。大脑的油门焊死了，刹车只是个装饰。别人犹豫“能不能做”，你只关心“什么时候做完”。对你来说，思考是拖延的借口，行动才是唯一的语法。", targetScores: [90, 30, 35, 15, 25, 70] },
+        { id: 1, name: "🌀 玄门隐士", desc: "你活在现实的裂缝里，能听见电线杆的窃窃私语，也能读懂外卖小票上的命运密码。别人觉得你该去看医生，但你清楚地知道：巧合是宇宙的母语。", targetScores: [25, 95, 20, 35, 50, 80] },
+        { id: 2, name: "🫂 胶水怪人", desc: "你的社交天赋属于魔法侧——能在葬礼上把人逗笑，也能在电梯里让社恐开口。你不是在交朋友，你是在织网，而所有人都是心甘情愿粘上来的飞虫。", targetScores: [40, 25, 98, 15, 80, 45] },
+        { id: 3, name: "📐 秩序判官", desc: "你的灵魂是一张无限延长的Excel表，每一个喷嚏都要被归类到子目录下。混乱是你唯一无法容忍的脏话。你相信只要规则足够细，连爱情都能被标准化生产。", targetScores: [35, 15, 25, 100, 20, 20] },
+        { id: 4, name: "💞 共振灵媒", desc: "你不是在听别人说话，你是在直接读取对方的情绪内存。你能从一句“我没事”里挖出三层崩溃。共情对你来说不是能力，是诅咒。", targetScores: [20, 55, 70, 25, 98, 35] },
+        { id: 5, name: "🎭 荒诞诗人", desc: "你崇拜无意义，就像别人崇拜成功。你相信最深刻的真理往往长着一张笑话的脸。逻辑对你来说是捆仙绳，而你是那只咬断绳子的猴子。", targetScores: [45, 65, 40, 10, 35, 100] },
+        { id: 6, name: "⚙️ 矛盾聚合体", desc: "你身体里住着三个互相拉黑的灵魂：一个想早睡，一个想通宵，还有一个想出家。你不是善变，你是拒绝被任何单一标签收编。", targetScores: [70, 70, 60, 60, 70, 70] },
+        { id: 7, name: "🌿 寂静观测者", desc: "你像一台装了情感传感器的监控摄像头。你看着世界吵闹，偶尔在内心弹幕里疯狂吐槽，但脸上只有“已读不回”的表情。", targetScores: [15, 75, 20, 65, 65, 55] },
+        { id: 8, name: "🍄 怪诞冒险家", desc: "你的好奇心比猫命还多一条。别人觉得危险的地方，你看到的是游乐场；别人觉得无聊的东西，你能玩出三个隐藏关卡。", targetScores: [85, 70, 55, 25, 45, 90] }
     ];
+    
+    // 补充每个人格的“行动指南”和“盲点”（用于高级解析）
+    const personalityAdvice = {
+        "🔥 狂焰行者": { strength: "行动力极强，能快速推动事情。", blind: "容易忽略细节和他人感受，可能会撞南墙。", advice: "每次行动前深呼吸3秒，问自己：这是最优解吗？" },
+        "🌀 玄门隐士": { strength: "洞察力超群，能发现隐藏规律。", blind: "容易沉浸在自己的世界里，与现实脱节。", advice: "每周选一天完全用逻辑思考，平衡直觉。" },
+        "🫂 胶水怪人": { strength: "人脉广，感染力强。", blind: "过度依赖社交认可，独处时容易焦虑。", advice: "练习享受独处，培养一个不需要观众的爱好。" },
+        "📐 秩序判官": { strength: "高效、可靠，能完成复杂计划。", blind: "缺乏灵活性，难以应对突发变化。", advice: "故意留出20%的弹性时间，接受不完美。" },
+        "💞 共振灵媒": { strength: "善解人意，治愈力强。", blind: "容易情绪过载，忘记照顾自己。", advice: "每天设定“情绪隔离时间”，只关注自己的感受。" },
+        "🎭 荒诞诗人": { strength: "创意无限，能化解尴尬。", blind: "可能让人觉得不靠谱或难以预测。", advice: "把荒诞点子记录在案，每月选一个实现。" },
+        "⚙️ 矛盾聚合体": { strength: "适应力极强，能处理矛盾。", blind: "容易内耗，决策困难。", advice: "建立简单的决策规则（比如硬币法），减少纠结。" },
+        "🌿 寂静观测者": { strength: "冷静、客观，擅长分析。", blind: "可能被误解为冷漠或不合群。", advice: "偶尔主动表达感受，哪怕只说一句。" },
+        "🍄 怪诞冒险家": { strength: "探索精神，总能发现新乐趣。", blind: "风险意识弱，容易受伤或闯祸。", advice: "冒险前做一次“最坏情况推演”，带上安全绳。" }
+    };
+    
+    // ======================= 绘制像素头像（保持不变） =======================
     function drawPixelAvatar(ctx, typeId, size=96) {
         const cell = size / 16;
         ctx.clearRect(0, 0, size, size);
@@ -374,8 +426,11 @@
         if(typeId === 2) { ctx.fillStyle = "#ffb347"; ctx.fillRect(2*cell,3*cell,cell*3,cell*3); }
         if(typeId === 8) { ctx.fillStyle = "#77aa55"; ctx.fillRect(11*cell,4*cell,cell*3,cell*4); }
     }
+    
+    // ======================= 全局变量 =======================
     let currentIndex = 0, userScores = [0,0,0,0,0,0], totalQuestions = questions.length;
     const questionCounterSpan = document.getElementById("question-counter"), progressTip = document.getElementById("progress-tip");
+    
     function renderCurrentQuestion() {
         if(currentIndex >= totalQuestions){ computeAndShowResult(); return; }
         const q = questions[currentIndex];
@@ -396,31 +451,102 @@
             optionsContainer.appendChild(btn);
         });
     }
+    
+    // 归一化到0-100
     function normalizeScores(scores){ const maxPossible = 3 * totalQuestions; return scores.map(s => Math.min(100, Math.floor((s / maxPossible) * 100))); }
-    function findClosestPersonality(normUser){
-        let bestIdx = 0, bestSim = -1;
-        for(let i=0;i<personalities.length;i++){
+    
+    // 改进的匹配算法：混合加权欧氏距离 + 余弦相似度，并返回所有人格的得分（越小越匹配）
+    function getAllPersonalityScores(normUser) {
+        let scoresList = [];
+        for(let i=0; i<personalities.length; i++) {
             const target = personalities[i].targetScores;
+            // 欧氏距离（归一化到0-1范围，最大可能距离为 sqrt(6*100^2)=244.9）
+            let euclid = 0;
+            for(let d=0; d<6; d++) {
+                let diff = normUser[d] - target[d];
+                euclid += diff * diff;
+            }
+            euclid = Math.sqrt(euclid) / 244.9; // 归一化
+            // 余弦相似度（范围-1到1，转为距离 1-sim）
             let dot=0, magU=0, magT=0;
-            for(let d=0;d<6;d++){ dot += normUser[d]*target[d]; magU += normUser[d]*normUser[d]; magT += target[d]*target[d]; }
-            const sim = dot / (Math.sqrt(magU)*Math.sqrt(magT)+1e-6);
-            if(sim > bestSim){ bestSim = sim; bestIdx = i; }
+            for(let d=0; d<6; d++) {
+                dot += normUser[d] * target[d];
+                magU += normUser[d] * normUser[d];
+                magT += target[d] * target[d];
+            }
+            let cosSim = dot / (Math.sqrt(magU)*Math.sqrt(magT) + 1e-6);
+            let cosDist = 1 - Math.max(0, cosSim); // 只考虑正向相似
+            // 混合分数：欧氏距离权重0.4，余弦距离权重0.6（余弦更关注方向）
+            let hybrid = euclid * 0.4 + cosDist * 0.6;
+            scoresList.push({ idx: i, score: hybrid, name: personalities[i].name, targetScores: target });
         }
-        return personalities[bestIdx];
+        scoresList.sort((a,b) => a.score - b.score);
+        return scoresList;
     }
+    
     function computeAndShowResult(){
         const normUser = normalizeScores(userScores);
-        const matched = findClosestPersonality(normUser);
+        const sorted = getAllPersonalityScores(normUser);
+        const best = sorted[0];
+        const second = sorted[1];
+        const matched = personalities[best.idx];
+        const secondMatch = personalities[second.idx];
+        
+        // 计算匹配率（基于混合分数，分数越低匹配越高，映射到70-99%）
+        const matchPercent = Math.floor(99 - (best.score * 30));
+        const matchDisplay = Math.min(99, Math.max(70, matchPercent));
+        
+        // 构建每个维度的详细得分和解读
+        let dimDetails = "";
+        for(let i=0; i<DIM_NAMES.length; i++) {
+            const dim = DIM_NAMES[i];
+            const score = normUser[i];
+            const insight = DIM_INSIGHTS[dim];
+            const level = score >= 70 ? "高" : (score <= 30 ? "低" : "中");
+            const desc = score >= 70 ? insight.high : (score <= 30 ? insight.low : "你的这项特质比较均衡，可根据场景灵活切换。");
+            dimDetails += `<div style="margin-bottom: 12px;">
+                <strong>${dim}</strong> <span class="score-badge">${score}分</span>
+                <div style="background:#e0d5c0; border-radius: 10px; margin: 5px 0; height: 6px;"><div style="width:${score}%; background:#e2a56a; height:6px; border-radius:10px;"></div></div>
+                <div class="dim-detail">${desc}</div>
+                <div class="dim-detail">💡 ${insight.advice}</div>
+            </div>`;
+        }
+        
+        // 人格深度解读（优势、盲点、建议）
+        const adv = personalityAdvice[matched.name] || { strength: "独特而复杂", blind: "有时难以被理解", advice: "接纳自己的多面性" };
+        
         const mainCard = document.querySelector(".quiz-card");
         let dimHtml = `<div class="dim-explanation">`;
         for(let i=0;i<DIM_NAMES.length;i++){ dimHtml += `<p><strong>${DIM_NAMES[i]}</strong> ${DIM_EXPLANATIONS[DIM_NAMES[i]]}</p>`; }
         dimHtml += `</div>`;
+        
         mainCard.innerHTML = `
             <div class="result-box">
                 <div class="pixel-art"><canvas id="pixelCanvas" class="pixel-avatar" width="128" height="128" style="width:128px;height:128px;image-rendering:pixelated;"></canvas></div>
                 <div class="result-name">${matched.name}</div>
-                <div class="result-desc"><p>✨ ${matched.desc}</p><p style="margin-top:12px;font-size:0.85rem;">⚡ 匹配率 ${Math.floor(Math.random()*15+70)}% · 六维共鸣</p></div>
+                <div class="result-desc">
+                    <p>✨ ${matched.desc}</p>
+                    <p style="margin-top:12px;font-size:0.9rem;">⚡ 匹配率 ${matchDisplay}% · 基于六维深度拟合</p>
+                </div>
                 <div class="radar-container"><canvas id="radarCanvas" width="300" height="300" style="width:100%;height:auto;max-width:300px"></canvas></div>
+                
+                <div class="insight-card">
+                    <strong>📊 你的六维分析</strong>
+                    ${dimDetails}
+                </div>
+                
+                <div class="insight-card">
+                    <strong>🌟 人格深度解读</strong><br>
+                    <strong>优势：</strong> ${adv.strength}<br>
+                    <strong>潜在盲点：</strong> ${adv.blind}<br>
+                    <strong>🎯 行动锦囊：</strong> ${adv.advice}
+                </div>
+                
+                <div class="second-match">
+                    🔍 与你第二相似的人格：<strong>${secondMatch.name}</strong><br>
+                    差异维度：你比${secondMatch.name}更偏向 ${getTopDiffDim(normUser, secondMatch.targetScores)}
+                </div>
+                
                 ${dimHtml}
                 <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;">
                     <button class="restart-btn" id="restartBtn">⟳ 重开奇境</button>
@@ -428,6 +554,20 @@
                 </div>
             </div>
         `;
+        
+        // 辅助函数：找差异最大的维度
+        function getTopDiffDim(user, target) {
+            let maxDiff = -1, maxDim = "";
+            for(let i=0;i<DIM_NAMES.length;i++) {
+                let diff = Math.abs(user[i] - target[i]);
+                if(diff > maxDiff) {
+                    maxDiff = diff;
+                    maxDim = DIM_NAMES[i];
+                }
+            }
+            return maxDim;
+        }
+        
         const pixelCanvas = document.getElementById("pixelCanvas");
         const ctx = pixelCanvas.getContext("2d");
         drawPixelAvatar(ctx, matched.id, 128);
@@ -440,6 +580,7 @@
         document.getElementById("restartBtn").addEventListener("click", () => location.reload());
         document.getElementById("galleryBtn").addEventListener("click", () => { window.location.href = "gallery.html"; });
     }
+    
     function init(){ userScores = [0,0,0,0,0,0]; currentIndex = 0; renderCurrentQuestion(); }
     init();
 </script>
