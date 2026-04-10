@@ -2,82 +2,83 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>Gxy&SyjTI · 人格奇境探测</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: linear-gradient(145deg, #0b1120 0%, #19233c 100%);
-            font-family: 'Segoe UI', 'Courier New', monospace, system-ui;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Courier New', monospace;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 1.5rem;
+            padding: 1rem;
         }
         .container {
-            max-width: 800px;
+            max-width: 750px;
             width: 100%;
             background: #fef7e8;
             background-image: repeating-linear-gradient(0deg, #e2dccd 0px, #e2dccd 1px, transparent 1px, transparent 8px);
             border-radius: 32px;
             box-shadow: 0 25px 40px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,240,0.6);
-            padding: 1.2rem;
+            padding: 1rem;
             border: 3px solid #4a3b28;
         }
         header {
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
             border-bottom: 3px dashed #c0a86a;
-            padding-bottom: 0.8rem;
+            padding-bottom: 0.6rem;
         }
         header h1 {
-            font-size: 2.3rem;
+            font-size: 1.9rem;
             font-family: 'Courier New', monospace;
             font-weight: 900;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             background: linear-gradient(135deg, #dd8866, #aa6f4a);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
             text-shadow: 2px 2px 0 #f0dbb2;
         }
-        .sub { color: #5d4a2e; font-weight: bold; margin-top: 6px; font-size: 0.8rem; }
+        .sub { color: #5d4a2e; font-weight: bold; margin-top: 4px; font-size: 0.75rem; }
         .quiz-card {
             background: #fffaf0;
             border-radius: 28px;
-            padding: 1.8rem 1.5rem;
+            padding: 1.2rem;
             box-shadow: inset 0 0 0 2px #fff8e7, 0 12px 20px rgba(0,0,0,0.2);
-            margin: 1rem 0;
+            margin: 0.8rem 0;
         }
         .progress-area {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             font-weight: bold;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #aa7a5c;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
         .question {
-            font-size: 1.65rem;
+            font-size: 1.4rem;
             font-weight: 800;
             line-height: 1.3;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             color: #2d281c;
             font-family: 'Courier New', monospace;
             background: #fffbee;
-            padding: 0.8rem;
-            border-left: 8px solid #e2a56a;
+            padding: 0.6rem;
+            border-left: 6px solid #e2a56a;
         }
-        .options { display: flex; flex-direction: column; gap: 0.9rem; }
+        .options { display: flex; flex-direction: column; gap: 0.7rem; }
         .option-btn {
             background: #e7ddca;
             border: 2px solid #b2926a;
             border-radius: 60px;
-            padding: 0.9rem 1.2rem;
-            font-size: 1rem;
+            padding: 0.7rem 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             text-align: left;
             color: #2e241a;
@@ -88,91 +89,109 @@
         }
         .option-btn:hover { background: #f7e5cf; transform: scale(0.98); border-color: #c27e4a; }
         .result-box { text-align: center; }
-        .pixel-art { display: flex; justify-content: center; margin: 20px 0; }
+        .pixel-art { display: flex; justify-content: center; margin: 15px 0; }
         canvas.pixel-avatar {
             image-rendering: crisp-edges;
             image-rendering: pixelated;
             background: #2e2c2a;
             border-radius: 20px;
-            box-shadow: 0 8px 0 #3a2c1e;
+            box-shadow: 0 6px 0 #3a2c1e;
+            width: 100px;
+            height: 100px;
         }
         .result-name {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             font-weight: 900;
             background: #2a241a;
             display: inline-block;
-            padding: 0.2rem 1.2rem;
+            padding: 0.2rem 1rem;
             border-radius: 40px;
             color: #ffdd99;
-            letter-spacing: 2px;
-            margin: 12px 0;
+            letter-spacing: 1px;
+            margin: 10px 0;
         }
         .result-desc {
             background: #e7dcc4;
-            padding: 1.2rem;
+            padding: 1rem;
             border-radius: 24px;
             text-align: left;
             line-height: 1.5;
-            margin: 1.2rem 0;
-            font-size: 1rem;
+            margin: 1rem 0;
+            font-size: 0.9rem;
             border: 2px solid #c8b084;
         }
-        .radar-container { max-width: 320px; margin: 20px auto; background: #fef3e0; padding: 12px; border-radius: 32px; }
+        .radar-container { max-width: 280px; margin: 15px auto; background: #fef3e0; padding: 10px; border-radius: 28px; }
         .dim-explanation {
             text-align: left;
-            margin-top: 20px;
-            padding: 12px 16px;
+            margin-top: 16px;
+            padding: 10px 12px;
             background: #f5ede0;
-            border-radius: 24px;
-            border-left: 6px solid #e2a56a;
-            font-size: 0.85rem;
+            border-radius: 20px;
+            border-left: 5px solid #e2a56a;
+            font-size: 0.75rem;
             color: #4a3a28;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px 16px;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 6px 12px;
         }
-        .dim-explanation p { margin: 4px 0; display: flex; align-items: center; gap: 6px; }
-        .dim-explanation strong { min-width: 60px; font-weight: 800; color: #b45f2b; }
+        .dim-explanation p { margin: 4px 0; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .dim-explanation strong { min-width: 55px; font-weight: 800; color: #b45f2b; }
         .score-badge {
             background: #2e241a;
             color: #ffdd99;
             border-radius: 30px;
-            padding: 2px 8px;
-            font-size: 0.7rem;
-            margin-left: 8px;
+            padding: 2px 6px;
+            font-size: 0.65rem;
+            margin-left: 6px;
         }
         .insight-card {
             background: #fff3e6;
             border-radius: 20px;
-            padding: 1rem;
-            margin: 1rem 0;
+            padding: 0.8rem;
+            margin: 0.8rem 0;
             text-align: left;
+            font-size: 0.85rem;
         }
         .second-match {
             background: #f1e7d6;
-            border-radius: 20px;
-            padding: 0.8rem;
-            font-size: 0.9rem;
-            margin-top: 12px;
+            border-radius: 18px;
+            padding: 0.7rem;
+            font-size: 0.8rem;
+            margin-top: 10px;
         }
         .restart-btn, .gallery-btn {
             background: #6f4e2e;
             border: none;
             color: #ffecb3;
             font-weight: bold;
-            padding: 0.8rem 1.5rem;
+            padding: 0.6rem 1.2rem;
             border-radius: 60px;
-            font-size: 1rem;
-            margin-top: 1rem;
+            font-size: 0.9rem;
+            margin-top: 0.8rem;
             cursor: pointer;
             transition: 0.2s;
             font-family: monospace;
         }
-        .gallery-btn { background: #aa6f4a; margin-left: 10px; }
+        .gallery-btn { background: #aa6f4a; margin-left: 8px; }
         .restart-btn:hover, .gallery-btn:hover { transform: scale(0.96); color: white; }
-        footer { text-align: center; font-size: 0.7rem; color: #8b7652; margin-top: 0.8rem; }
-        .badge { font-size: 0.7rem; background: #342c1f; display: inline-block; padding: 4px 12px; border-radius: 30px; color: #ffdd99; }
-        .dim-detail { margin-top: 8px; font-size: 0.75rem; color: #5e4a32; }
+        footer { text-align: center; font-size: 0.65rem; color: #8b7652; margin-top: 0.6rem; }
+        .badge { font-size: 0.65rem; background: #342c1f; display: inline-block; padding: 3px 10px; border-radius: 30px; color: #ffdd99; }
+        .dim-detail { margin-top: 4px; font-size: 0.7rem; color: #5e4a32; }
+        .progress-bar-bg { background: #e0d5c0; border-radius: 10px; height: 5px; margin: 4px 0; }
+        .progress-bar-fill { background: #e2a56a; height: 5px; border-radius: 10px; }
+        
+        /* 手机端额外优化 */
+        @media (max-width: 550px) {
+            body { padding: 0.6rem; }
+            .container { padding: 0.7rem; }
+            .quiz-card { padding: 0.9rem; }
+            .question { font-size: 1.2rem; padding: 0.5rem; }
+            .option-btn { padding: 0.6rem 0.9rem; font-size: 0.85rem; }
+            .result-name { font-size: 1.5rem; }
+            .insight-card { font-size: 0.8rem; }
+            .dim-explanation { grid-template-columns: 1fr; gap: 4px; }
+            .radar-container { max-width: 240px; }
+        }
     </style>
 </head>
 <body>
@@ -205,17 +224,8 @@
         "💞 共情力": "容易感受到别人的情绪",
         "🎭 玩梗度": "能接住离谱、荒诞的梗"
     };
-    // 维度深度解读（高分/低分含义）
-    const DIM_INSIGHTS = {
-        "🔥 行动力": { high: "你是一台永动机，想到就做，很少犹豫。", low: "你习惯深思熟虑，但有时会错过最佳时机。", advice: "试试「5秒法则」：想做什么，倒数5秒就行动。" },
-        "🌀 直觉力": { high: "你的第六感很准，常能感知到隐藏的规律。", low: "你更依赖事实和逻辑，对玄学保持距离。", advice: "偶尔放下理性，相信一次直觉，也许有惊喜。" },
-        "🫂 社交力": { high: "你是人群中的粘合剂，擅长活跃气氛。", low: "你更喜欢独处或深度交流，讨厌无效社交。", advice: "找到让你舒服的社交节奏，不必勉强。" },
-        "📐 秩序感": { high: "你热爱计划和整洁，混乱会让你焦虑。", low: "你随性自由，不喜欢被规则束缚。", advice: "建立最小限度的秩序（比如每天整理5分钟），会提升效率。" },
-        "💞 共情力": { high: "你能轻易感知他人情绪，是很好的倾听者。", low: "你理性冷静，不容易被他人情绪影响。", advice: "共情力低不代表冷漠，只是你更擅长解决问题。" },
-        "🎭 玩梗度": { high: "你脑洞清奇，能接住各种荒诞梗。", low: "你偏向正经，对无厘头内容不太感冒。", advice: "偶尔放松一点，荒诞是生活的解药。" }
-    };
     
-    // ======================= 题目（25道，与原来一致） =======================
+    // ======================= 题目（25道） =======================
     const questions = [
         { text: "你发现冰箱里的牛奶过期三天了，你的第一反应是？", options: [
             { text: "一口闷掉！免疫力就是战斗力", scores: [3,1,0,0,0,2] },
@@ -369,33 +379,51 @@
         ]}
     ];
     
-    // ======================= 人格库（9种，targetScores 已微调，更符合特征） =======================
+    // ======================= 人格库（9种，丰富描述） =======================
     const personalities = [
-        { id: 0, name: "🔥 狂焰行者", desc: "你不是在解决问题，你是在把问题烧成灰烬。大脑的油门焊死了，刹车只是个装饰。别人犹豫“能不能做”，你只关心“什么时候做完”。对你来说，思考是拖延的借口，行动才是唯一的语法。", targetScores: [90, 30, 35, 15, 25, 70] },
-        { id: 1, name: "🌀 玄门隐士", desc: "你活在现实的裂缝里，能听见电线杆的窃窃私语，也能读懂外卖小票上的命运密码。别人觉得你该去看医生，但你清楚地知道：巧合是宇宙的母语。", targetScores: [25, 95, 20, 35, 50, 80] },
-        { id: 2, name: "🫂 胶水怪人", desc: "你的社交天赋属于魔法侧——能在葬礼上把人逗笑，也能在电梯里让社恐开口。你不是在交朋友，你是在织网，而所有人都是心甘情愿粘上来的飞虫。", targetScores: [40, 25, 98, 15, 80, 45] },
-        { id: 3, name: "📐 秩序判官", desc: "你的灵魂是一张无限延长的Excel表，每一个喷嚏都要被归类到子目录下。混乱是你唯一无法容忍的脏话。你相信只要规则足够细，连爱情都能被标准化生产。", targetScores: [35, 15, 25, 100, 20, 20] },
-        { id: 4, name: "💞 共振灵媒", desc: "你不是在听别人说话，你是在直接读取对方的情绪内存。你能从一句“我没事”里挖出三层崩溃。共情对你来说不是能力，是诅咒。", targetScores: [20, 55, 70, 25, 98, 35] },
-        { id: 5, name: "🎭 荒诞诗人", desc: "你崇拜无意义，就像别人崇拜成功。你相信最深刻的真理往往长着一张笑话的脸。逻辑对你来说是捆仙绳，而你是那只咬断绳子的猴子。", targetScores: [45, 65, 40, 10, 35, 100] },
-        { id: 6, name: "⚙️ 矛盾聚合体", desc: "你身体里住着三个互相拉黑的灵魂：一个想早睡，一个想通宵，还有一个想出家。你不是善变，你是拒绝被任何单一标签收编。", targetScores: [70, 70, 60, 60, 70, 70] },
-        { id: 7, name: "🌿 寂静观测者", desc: "你像一台装了情感传感器的监控摄像头。你看着世界吵闹，偶尔在内心弹幕里疯狂吐槽，但脸上只有“已读不回”的表情。", targetScores: [15, 75, 20, 65, 65, 55] },
-        { id: 8, name: "🍄 怪诞冒险家", desc: "你的好奇心比猫命还多一条。别人觉得危险的地方，你看到的是游乐场；别人觉得无聊的东西，你能玩出三个隐藏关卡。", targetScores: [85, 70, 55, 25, 45, 90] }
+        { id: 0, name: "🔥 狂焰行者", 
+          desc: "你体内的火焰不是温暖的那种，是能把犹豫烧成灰烬的那种。你的大脑里没有刹车片，油门踩到底还嫌不够。别人在纠结“能不能做”，你只关心“什么时候做完”。思考对你来说是拖延的华丽借口，行动才是唯一值得尊敬的语法。哪怕方向错了，你也坚信跑起来的风会修正弹道。世界在你眼中是一根引信，而你永远叼着打火机，随时准备点燃下一场冒险。", 
+          targetScores: [90, 30, 35, 15, 25, 70] },
+        { id: 1, name: "🌀 玄门隐士", 
+          desc: "你活在现实的缝隙里，能听见电线杆的窃窃私语，也能读懂外卖小票上的命运密码。你相信巧合是宇宙的母语，而大多数人只是聋子。别人觉得你该去看医生，但你清楚地知道：他们才是那个没收到信号的人。你不解释，因为解释本身就是对神秘感的背叛。你像一台人形占卜机，投币口是眼睛，吐出的签文没人看得懂，但都说准。", 
+          targetScores: [25, 95, 20, 35, 50, 80] },
+        { id: 2, name: "🫂 胶水怪人", 
+          desc: "你的社交天赋属于魔法侧——能在葬礼上把人逗笑，也能在电梯里让社恐开口。你不是在交朋友，你是在织网，而所有人都是心甘情愿粘上来的飞虫。你讨厌冷场，就像吸血鬼讨厌十字架。和你待过的人都会产生戒断反应：为什么其他人都那么无聊？你是人群中的粘合剂，也是气氛的永动机。", 
+          targetScores: [40, 25, 98, 15, 80, 45] },
+        { id: 3, name: "📐 秩序判官", 
+          desc: "你的灵魂是一张无限延长的Excel表，每一个喷嚏都要被归类到“健康-突发-可量化”子目录下。混乱是你唯一无法容忍的脏话。你相信只要规则足够细，连爱情都能被标准化生产。别人在享受意外，你在复盘意外为什么不符合预案。你的人生座右铭：“万物皆可Ctrl+Z”。你的房间永远整洁，你的计划永远超前三天。", 
+          targetScores: [35, 15, 25, 100, 20, 20] },
+        { id: 4, name: "💞 共振灵媒", 
+          desc: "你不是在听别人说话，你是在直接读取对方的情绪内存。你能从一句“我没事”里挖出三层崩溃、两段童年阴影和一盘没吃完的炒饭。共情对你来说不是能力，是诅咒——你太容易变成别人的情绪垃圾桶，而且从不收废品处理费。温柔是你最锋利的武器，伤的都是自己。但你依然选择张开双臂，因为你相信：被看见，就是最好的治愈。", 
+          targetScores: [20, 55, 70, 25, 98, 35] },
+        { id: 5, name: "🎭 荒诞诗人", 
+          desc: "你崇拜无意义，就像别人崇拜成功。你相信最深刻的真理往往长着一张笑话的脸。你能在堵车时写出十四行诗，也能在葬礼上找到段子素材。逻辑对你来说是捆仙绳，而你是那只咬断绳子还顺便撒尿的猴子。你说：世界本来就是乱码，我只是懒得解码。你的口头禅：“这不也挺好吗？”", 
+          targetScores: [45, 65, 40, 10, 35, 100] },
+        { id: 6, name: "⚙️ 矛盾聚合体", 
+          desc: "你身体里住着三个互相拉黑的灵魂：一个想早睡，一个想通宵，还有一个想出家。你上一秒还在列五年计划，下一秒就躺平刷猫视频。你不是善变，你是拒绝被任何单一标签收编。别人觉得你分裂，你觉得自己是交响乐——只是指挥跑路了。你既是战士又是诗人，既是会计又是疯子，你在矛盾中舞蹈，在混乱里自洽。", 
+          targetScores: [70, 70, 60, 60, 70, 70] },
+        { id: 7, name: "🌿 寂静观测者", 
+          desc: "你像一台装了情感传感器的监控摄像头。你看着世界吵闹，偶尔在内心弹幕里疯狂吐槽，但脸上只有“已读不回”的表情。你不爱说话，不是不会，是觉得大多数话配不上你的沉默。你出手时往往一句顶一万句，像一记闷棍，精准、安静、致命。你是人群中的透明人，却是暗处最清醒的那双眼睛。", 
+          targetScores: [15, 75, 20, 65, 65, 55] },
+        { id: 8, name: "🍄 怪诞冒险家", 
+          desc: "你的好奇心比猫命还多一条。别人觉得危险的地方，你看到的是游乐场；别人觉得无聊的东西，你能玩出三个隐藏关卡。你的人生信条是：“先试试，大不了变成素材。” 你是那种会在雷暴天出去放风筝，顺便写一首诗的人。世界对你来说不是地图，是一堆还没拆的盲盒。你的每一次眨眼，都是一次小小的探险。", 
+          targetScores: [85, 70, 55, 25, 45, 90] }
     ];
     
-    // 补充每个人格的“行动指南”和“盲点”（用于高级解析）
+    // 每个人格的深度建议（基于人格整体，不再与六维极端建议矛盾）
     const personalityAdvice = {
-        "🔥 狂焰行者": { strength: "行动力极强，能快速推动事情。", blind: "容易忽略细节和他人感受，可能会撞南墙。", advice: "每次行动前深呼吸3秒，问自己：这是最优解吗？" },
-        "🌀 玄门隐士": { strength: "洞察力超群，能发现隐藏规律。", blind: "容易沉浸在自己的世界里，与现实脱节。", advice: "每周选一天完全用逻辑思考，平衡直觉。" },
-        "🫂 胶水怪人": { strength: "人脉广，感染力强。", blind: "过度依赖社交认可，独处时容易焦虑。", advice: "练习享受独处，培养一个不需要观众的爱好。" },
-        "📐 秩序判官": { strength: "高效、可靠，能完成复杂计划。", blind: "缺乏灵活性，难以应对突发变化。", advice: "故意留出20%的弹性时间，接受不完美。" },
-        "💞 共振灵媒": { strength: "善解人意，治愈力强。", blind: "容易情绪过载，忘记照顾自己。", advice: "每天设定“情绪隔离时间”，只关注自己的感受。" },
-        "🎭 荒诞诗人": { strength: "创意无限，能化解尴尬。", blind: "可能让人觉得不靠谱或难以预测。", advice: "把荒诞点子记录在案，每月选一个实现。" },
-        "⚙️ 矛盾聚合体": { strength: "适应力极强，能处理矛盾。", blind: "容易内耗，决策困难。", advice: "建立简单的决策规则（比如硬币法），减少纠结。" },
-        "🌿 寂静观测者": { strength: "冷静、客观，擅长分析。", blind: "可能被误解为冷漠或不合群。", advice: "偶尔主动表达感受，哪怕只说一句。" },
-        "🍄 怪诞冒险家": { strength: "探索精神，总能发现新乐趣。", blind: "风险意识弱，容易受伤或闯祸。", advice: "冒险前做一次“最坏情况推演”，带上安全绳。" }
+        "🔥 狂焰行者": { strength: "行动力爆表，能瞬间点燃团队。", blind: "容易忽略细节和他人感受，偶尔撞南墙。", advice: "每次行动前深呼吸3秒，问自己：这步会不会伤到谁？同时保持你的冲劲——世界需要点火的人。" },
+        "🌀 玄门隐士": { strength: "洞察力超群，能发现隐藏规律。", blind: "容易沉浸在自己的世界里，与现实脱节。", advice: "你的直觉很准，但行动力可能拖后腿。把直觉变成最小行动：相信第一个念头，倒数5秒直接做。每周再选一天刻意用逻辑复盘，平衡两股力量。" },
+        "🫂 胶水怪人": { strength: "人脉广，感染力强。", blind: "过度依赖社交认可，独处时容易焦虑。", advice: "练习享受独处，培养一个不需要观众的爱好。你的温暖是礼物，但别忘了自己也需要被温暖。" },
+        "📐 秩序判官": { strength: "高效、可靠，能完成复杂计划。", blind: "缺乏灵活性，难以应对突发变化。", advice: "故意留出20%的弹性时间，接受不完美。混乱有时会带来惊喜，试着把意外当成新数据。" },
+        "💞 共振灵媒": { strength: "善解人意，治愈力强。", blind: "容易情绪过载，忘记照顾自己。", advice: "每天设定“情绪隔离时间”，只关注自己的感受。你的共情是超能力，但需要定时充电。" },
+        "🎭 荒诞诗人": { strength: "创意无限，能化解尴尬。", blind: "可能让人觉得不靠谱或难以预测。", advice: "把荒诞点子记录在案，每月选一个实现。你的无意义中藏着最深的智慧，但也要学会在关键时刻正经。" },
+        "⚙️ 矛盾聚合体": { strength: "适应力极强，能处理矛盾。", blind: "容易内耗，决策困难。", advice: "建立简单的决策规则（比如硬币法），减少纠结。你的多元是天赋，但需要一根主轴来串联。" },
+        "🌿 寂静观测者": { strength: "冷静、客观，擅长分析。", blind: "可能被误解为冷漠或不合群。", advice: "偶尔主动表达感受，哪怕只说一句。你的沉默很有力量，但适当的发声会让你更完整。" },
+        "🍄 怪诞冒险家": { strength: "探索精神，总能发现新乐趣。", blind: "风险意识弱，容易受伤或闯祸。", advice: "冒险前做一次“最坏情况推演”，带上安全绳。你的好奇心是宝藏，但别忘了系好安全带。" }
     };
     
-    // ======================= 绘制像素头像（保持不变） =======================
+    // ======================= 绘制像素头像 =======================
     function drawPixelAvatar(ctx, typeId, size=96) {
         const cell = size / 16;
         ctx.clearRect(0, 0, size, size);
@@ -452,22 +480,15 @@
         });
     }
     
-    // 归一化到0-100
     function normalizeScores(scores){ const maxPossible = 3 * totalQuestions; return scores.map(s => Math.min(100, Math.floor((s / maxPossible) * 100))); }
     
-    // 改进的匹配算法：混合加权欧氏距离 + 余弦相似度，并返回所有人格的得分（越小越匹配）
     function getAllPersonalityScores(normUser) {
         let scoresList = [];
         for(let i=0; i<personalities.length; i++) {
             const target = personalities[i].targetScores;
-            // 欧氏距离（归一化到0-1范围，最大可能距离为 sqrt(6*100^2)=244.9）
             let euclid = 0;
-            for(let d=0; d<6; d++) {
-                let diff = normUser[d] - target[d];
-                euclid += diff * diff;
-            }
-            euclid = Math.sqrt(euclid) / 244.9; // 归一化
-            // 余弦相似度（范围-1到1，转为距离 1-sim）
+            for(let d=0; d<6; d++) { let diff = normUser[d] - target[d]; euclid += diff * diff; }
+            euclid = Math.sqrt(euclid) / 244.9;
             let dot=0, magU=0, magT=0;
             for(let d=0; d<6; d++) {
                 dot += normUser[d] * target[d];
@@ -475,8 +496,7 @@
                 magT += target[d] * target[d];
             }
             let cosSim = dot / (Math.sqrt(magU)*Math.sqrt(magT) + 1e-6);
-            let cosDist = 1 - Math.max(0, cosSim); // 只考虑正向相似
-            // 混合分数：欧氏距离权重0.4，余弦距离权重0.6（余弦更关注方向）
+            let cosDist = 1 - Math.max(0, cosSim);
             let hybrid = euclid * 0.4 + cosDist * 0.6;
             scoresList.push({ idx: i, score: hybrid, name: personalities[i].name, targetScores: target });
         }
@@ -491,28 +511,26 @@
         const second = sorted[1];
         const matched = personalities[best.idx];
         const secondMatch = personalities[second.idx];
-        
-        // 计算匹配率（基于混合分数，分数越低匹配越高，映射到70-99%）
         const matchPercent = Math.floor(99 - (best.score * 30));
         const matchDisplay = Math.min(99, Math.max(70, matchPercent));
         
-        // 构建每个维度的详细得分和解读
+        // 六维详细分析
         let dimDetails = "";
         for(let i=0; i<DIM_NAMES.length; i++) {
             const dim = DIM_NAMES[i];
             const score = normUser[i];
-            const insight = DIM_INSIGHTS[dim];
-            const level = score >= 70 ? "高" : (score <= 30 ? "低" : "中");
-            const desc = score >= 70 ? insight.high : (score <= 30 ? insight.low : "你的这项特质比较均衡，可根据场景灵活切换。");
+            let desc = "";
+            if(score >= 70) desc = DIM_INSIGHTS[dim]?.high || "你的这项特质非常突出，是你的核心驱动力。";
+            else if(score <= 30) desc = DIM_INSIGHTS[dim]?.low || "你更倾向于保守或克制，这不是弱点，只是另一种智慧。";
+            else desc = "你的这项特质比较均衡，可根据场景灵活切换。";
             dimDetails += `<div style="margin-bottom: 12px;">
                 <strong>${dim}</strong> <span class="score-badge">${score}分</span>
-                <div style="background:#e0d5c0; border-radius: 10px; margin: 5px 0; height: 6px;"><div style="width:${score}%; background:#e2a56a; height:6px; border-radius:10px;"></div></div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${score}%;"></div></div>
                 <div class="dim-detail">${desc}</div>
-                <div class="dim-detail">💡 ${insight.advice}</div>
+                <div class="dim-detail">💡 ${DIM_ADVICE[dim] || "保持觉察，适度调整"}</div>
             </div>`;
         }
         
-        // 人格深度解读（优势、盲点、建议）
         const adv = personalityAdvice[matched.name] || { strength: "独特而复杂", blind: "有时难以被理解", advice: "接纳自己的多面性" };
         
         const mainCard = document.querySelector(".quiz-card");
@@ -522,64 +540,75 @@
         
         mainCard.innerHTML = `
             <div class="result-box">
-                <div class="pixel-art"><canvas id="pixelCanvas" class="pixel-avatar" width="128" height="128" style="width:128px;height:128px;image-rendering:pixelated;"></canvas></div>
+                <div class="pixel-art"><canvas id="pixelCanvas" class="pixel-avatar" width="100" height="100" style="width:100px;height:100px;image-rendering:pixelated;"></canvas></div>
                 <div class="result-name">${matched.name}</div>
                 <div class="result-desc">
                     <p>✨ ${matched.desc}</p>
-                    <p style="margin-top:12px;font-size:0.9rem;">⚡ 匹配率 ${matchDisplay}% · 基于六维深度拟合</p>
+                    <p style="margin-top:10px;font-size:0.85rem;">⚡ 匹配率 ${matchDisplay}% · 基于六维深度拟合</p>
                 </div>
-                <div class="radar-container"><canvas id="radarCanvas" width="300" height="300" style="width:100%;height:auto;max-width:300px"></canvas></div>
-                
+                <div class="radar-container"><canvas id="radarCanvas" width="280" height="280" style="width:100%;height:auto;max-width:280px"></canvas></div>
                 <div class="insight-card">
                     <strong>📊 你的六维分析</strong>
                     ${dimDetails}
                 </div>
-                
                 <div class="insight-card">
                     <strong>🌟 人格深度解读</strong><br>
                     <strong>优势：</strong> ${adv.strength}<br>
                     <strong>潜在盲点：</strong> ${adv.blind}<br>
                     <strong>🎯 行动锦囊：</strong> ${adv.advice}
                 </div>
-                
                 <div class="second-match">
                     🔍 与你第二相似的人格：<strong>${secondMatch.name}</strong><br>
                     差异维度：你比${secondMatch.name}更偏向 ${getTopDiffDim(normUser, secondMatch.targetScores)}
                 </div>
-                
                 ${dimHtml}
-                <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;">
+                <div style="display: flex; justify-content: center; gap: 10px; margin-top: 16px;">
                     <button class="restart-btn" id="restartBtn">⟳ 重开奇境</button>
                     <button class="gallery-btn" id="galleryBtn">📸 查看我们的相册</button>
                 </div>
             </div>
         `;
         
-        // 辅助函数：找差异最大的维度
         function getTopDiffDim(user, target) {
             let maxDiff = -1, maxDim = "";
             for(let i=0;i<DIM_NAMES.length;i++) {
                 let diff = Math.abs(user[i] - target[i]);
-                if(diff > maxDiff) {
-                    maxDiff = diff;
-                    maxDim = DIM_NAMES[i];
-                }
+                if(diff > maxDiff) { maxDiff = diff; maxDim = DIM_NAMES[i]; }
             }
             return maxDim;
         }
         
         const pixelCanvas = document.getElementById("pixelCanvas");
         const ctx = pixelCanvas.getContext("2d");
-        drawPixelAvatar(ctx, matched.id, 128);
+        drawPixelAvatar(ctx, matched.id, 100);
         const radarCtx = document.getElementById("radarCanvas").getContext("2d");
         new Chart(radarCtx, {
             type: 'radar',
-            data: { labels: DIM_NAMES, datasets: [{ label: '你的荒诞六维', data: normUser, backgroundColor: 'rgba(235, 140, 80, 0.3)', borderColor: '#c2612c', borderWidth: 2, pointBackgroundColor: '#e38b4a', pointBorderColor: '#fff', pointRadius: 4 }] },
-            options: { responsive: true, maintainAspectRatio: true, scales: { r: { beginAtZero: true, max: 100, ticks: { stepSize: 20, display: false }, pointLabels: { display: true, font: { size: 12 } } } }, plugins: { legend: { position: 'top' }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw}分` } } } }
+            data: { labels: DIM_NAMES, datasets: [{ label: '你的荒诞六维', data: normUser, backgroundColor: 'rgba(235, 140, 80, 0.3)', borderColor: '#c2612c', borderWidth: 2, pointBackgroundColor: '#e38b4a', pointBorderColor: '#fff', pointRadius: 3 }] },
+            options: { responsive: true, maintainAspectRatio: true, scales: { r: { beginAtZero: true, max: 100, ticks: { stepSize: 20, display: false }, pointLabels: { display: true, font: { size: 10 } } } }, plugins: { legend: { position: 'top', labels: { font: { size: 10 } } }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw}分` } } } }
         });
         document.getElementById("restartBtn").addEventListener("click", () => location.reload());
         document.getElementById("galleryBtn").addEventListener("click", () => { window.location.href = "gallery.html"; });
     }
+    
+    // 补充维度建议（与人格建议不冲突，只做通用提醒）
+    const DIM_ADVICE = {
+        "🔥 行动力": "如果你行动力偏低，试试「5秒法则」；如果偏高，注意留出思考时间。",
+        "🌀 直觉力": "直觉强时多记录灵感；直觉弱时相信数据，但偶尔给直觉一次机会。",
+        "🫂 社交力": "社交多时记得给自己充电；社交少时不必自责，找到小圈子即可。",
+        "📐 秩序感": "秩序强时留点弹性空间；秩序弱时建立最小习惯（比如每天整理5分钟）。",
+        "💞 共情力": "共情强时设好情绪边界；共情弱时练习换位思考，哪怕只是想象。",
+        "🎭 玩梗度": "玩梗强时别让玩笑伤人；玩梗弱时放松一点，荒诞是生活的解药。"
+    };
+    
+    const DIM_INSIGHTS = {
+        "🔥 行动力": { high: "你是一台永动机，想到就做，很少犹豫。", low: "你习惯深思熟虑，但有时会错过最佳时机。" },
+        "🌀 直觉力": { high: "你的第六感很准，常能感知到隐藏的规律。", low: "你更依赖事实和逻辑，对玄学保持距离。" },
+        "🫂 社交力": { high: "你是人群中的粘合剂，擅长活跃气氛。", low: "你更喜欢独处或深度交流，讨厌无效社交。" },
+        "📐 秩序感": { high: "你热爱计划和整洁，混乱会让你焦虑。", low: "你随性自由，不喜欢被规则束缚。" },
+        "💞 共情力": { high: "你能轻易感知他人情绪，是很好的倾听者。", low: "你理性冷静，不容易被他人情绪影响。" },
+        "🎭 玩梗度": { high: "你脑洞清奇，能接住各种荒诞梗。", low: "你偏向正经，对无厘头内容不太感冒。" }
+    };
     
     function init(){ userScores = [0,0,0,0,0,0]; currentIndex = 0; renderCurrentQuestion(); }
     init();
